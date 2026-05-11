@@ -1,0 +1,257 @@
+.container {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+}
+
+/* Основной контейнер аналогичен GroupDetail */
+.content {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+}
+
+/* Верхняя часть с заголовком и кнопкой */
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 1.5rem;
+}
+
+.top h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #1a1a1a;
+}
+
+/* Контейнер списка (аналог tableCard) */
+.bottom {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+/* Шапка таблицы */
+.headerRow {
+  padding: 1.2rem 1.5rem;
+  background: #f8fafc;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Две колонки: Номер и Руководитель */
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.headerRow p {
+  margin: 0;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #718096;
+  font-weight: 700;
+}
+
+/* Строка группы (ссылка) */
+.groupRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+  text-decoration: none;
+  color: inherit;
+  transition: background-color 0.2s ease;
+  align-items: center;
+}
+
+.groupRow:last-child {
+  border-bottom: none;
+}
+
+.groupRow:hover {
+  background-color: #f9fafb;
+}
+
+/* Стили текста внутри строк */
+.groupName {
+  font-weight: 600;
+  color: #2563eb; /* Синий акцент для ссылок */
+  margin: 0;
+}
+
+.teacherName {
+  margin: 0;
+  color: #4b5563;
+}
+
+/* Пустые состояния и загрузка */
+.emptyState, .loader, .error {
+  text-align: center;
+  padding: 3rem;
+  color: #94a3b8;
+  font-size: 1.1rem;
+}
+
+/* Адаптивность для маленьких экранов */
+@media (max-width: 640px) {
+  .top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .headerRow, .groupRow {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .headerRow {
+    display: none; /* Скрываем заголовки на мобилках для чистоты */
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 1.5rem;
+}
+
+.header h1 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  color: #1a1a1a;
+}
+
+.subtitle {
+  margin: 0.2rem 0;
+  color: #666;
+}
+
+.tableCard {
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+  border: 1px solid #e5e7eb;
+}
+
+.tableHeader {
+  padding: 1.2rem 1.5rem;
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.tableHeader h3 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.count {
+  background: #e2e8f0;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.table th {
+  padding: 1rem 1.5rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #718096;
+  font-weight: 700;
+}
+
+.table td {
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.table tr:last-child td {
+  border-bottom: none;
+}
+
+.table tr:hover {
+  background-color: #f9fafb;
+}
+
+.indexCol {
+  width: 50px;
+  color: #94a3b8;
+}
+
+.nameCol {
+  font-weight: 500;
+}
+
+.actionsCol {
+  text-align: right;
+}
+
+.editBtn {
+  background: none;
+  border: none;
+  color: #4480ef;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.editBtn:hover {
+  background: #e2f4fe;
+}
+
+.deleteBtn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+}
+
+.footerButtons {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-start;
+}
+
+/* Вспомогательные классы */
+.red {
+  background-color: #ef4444 !important;
+}
+
+.loader, .error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: #666;
+}

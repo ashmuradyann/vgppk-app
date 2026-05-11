@@ -1,0 +1,19 @@
+.notification {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 200px;
+  height: 100px;
+  border: 1px solid;
+  color: #fff;
+  background-color: rgb(221, 65, 65);
+  border-color: rgb(241, 104, 104);
+  padding: 10px;
+  z-index: 1;
+  border-radius: 10px;
+  
+  &.success {
+    background-color: rgb(61, 199, 61);
+    border-color: rgb(84, 212, 84);
+  }
+}
