@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface Specialty {
+  id: number,
   code: string
   specialty: string
   qualification: string
@@ -26,9 +27,12 @@ const specialtiesSlice = createSlice({
     },
     addSpecialty: (state, action: PayloadAction<Specialty>) => {
       state.specialties.push(action.payload)
+    },
+    removeSpecialty: (state, action: PayloadAction<number>) => {
+      state.specialties = state.specialties.filter(el => el.id !== action.payload)
     }
   }
 })
 
-export const { createSpecialty, setSpecialties, addSpecialty } = specialtiesSlice.actions
+export const { createSpecialty, setSpecialties, addSpecialty, removeSpecialty } = specialtiesSlice.actions
 export default specialtiesSlice.reducer

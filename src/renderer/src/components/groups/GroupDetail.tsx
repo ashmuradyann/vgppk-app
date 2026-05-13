@@ -82,6 +82,12 @@ const GroupDetail = () => {
     }
   }
 
+  const handleAddingSpecialty = () => {
+    dispatch(
+      setPopupData({ isOpen: true, popupType: 'addingSpecialtyToGroup', popupName: 'Добавление специальности' })
+    )
+  }
+
   // Use currentGroup for rendering
   const group = currentGroup
 
@@ -94,15 +100,26 @@ const GroupDetail = () => {
         <div className={styles.info}>
           <h1>Группа: {group.name}</h1>
           <p className={styles.subtitle}>
-            <strong>Специальность:</strong> {group.specialty?.name || 'Не указана'}
+            <strong>Специальность:</strong>{' '}
+            {currentGroup.specialty?.specialty || <span onClick={handleAddingSpecialty}>Выбрать</span>}
           </p>
           <p className={styles.subtitle}>
             <strong>Руководитель:</strong> {group.teacher_name}
           </p>
+          <div className="select-wrapper">
+            <select className="custom-select" name="practice_type" id="practice_type">
+              <option value="up">Учебная практика</option>
+              <option value="pp">Производственная практика</option>
+              <option value="pdp">Производственная преддипломная практика</option>
+            </select>
+          </div>
         </div>
         <div className={styles.actions}>
           <button className={clsx('btn-primary', styles.red)} onClick={removeGroup}>
             Удалить группу
+          </button>
+          <button className="btn-primary" onClick={handleCreateStudent}>
+            Добавить студента
           </button>
         </div>
       </header>
@@ -142,12 +159,6 @@ const GroupDetail = () => {
           </table>
         </div>
       </section>
-
-      <footer className={styles.footerButtons}>
-        <button className="btn-primary" onClick={handleCreateStudent}>
-          + Добавить студента
-        </button>
-      </footer>
     </div>
   )
 }

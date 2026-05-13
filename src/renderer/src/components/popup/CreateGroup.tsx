@@ -63,7 +63,6 @@ const CreateGroup = () => {
         name: group_name,
         teacher_name: teacher_name,
         academic_year: studyPeriod,
-        specialty: '',
         students
       }).then((res) => {
         showNotify(true, `Группа ${group_name} создана.`)

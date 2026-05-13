@@ -8,9 +8,9 @@ import './style.css'
 import { useSelector } from 'react-redux'
 import { RootState } from './store/store'
 import CreateGroup from './components/popup/CreateGroup'
-import Quiz from './components/popup/Quiz'
 import AddStudent from './components/popup/AddStudent'
 import AddSpecialty from './components/popup/AddSpecialty'
+import SelectSpecialty from './components/popup/SelectSpecialty'
 
 function App() {
   const {
@@ -37,11 +37,11 @@ function App() {
           <AddSpecialty />
         </Popup>
       )}
-      {/* {isPopupOpen && popupType === 'quiz' && (
+      {isPopupOpen && popupType === 'addingSpecialtyToGroup' && (
         <Popup>
-          <Quiz />
+          <SelectSpecialty />
         </Popup>
-      )} */}
+      )}
       {isNotificationOpen && <Notification />}
       <div className="wrapper">
         <aside className="sidebar">

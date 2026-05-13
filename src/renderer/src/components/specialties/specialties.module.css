@@ -50,12 +50,70 @@
 
 /* Строка специальности (ссылка) */
 .groupRow {
-  display: block; /* Занимает всю ширину */
-  padding: 1.2rem 1.5rem;
+  display: grid;
+  /* 
+     1.2fr — для названия (пошире)
+     1fr   — для квалификации
+     auto  — для кнопки (по размеру контента) 
+  */
+  grid-template-columns: 1.2fr 1fr auto; 
+  padding: 1rem 1.5rem;
   border-bottom: 1px solid #f0f0f0;
   text-decoration: none;
   color: inherit;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease;
+  align-items: center;
+  gap: 1rem; /* Отступ между колонками */
+}
+
+.btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+}
+
+.editBtn {
+  color: #4472ef;
+}
+
+.deleteBtn {
+  color: #ef4444;
+}
+
+.editBtn:hover {
+  background: #e2e9fe;
+  color: #2651dc;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+/* Адаптивность: на мобильных устройствах */
+@media (max-width: 640px) {
+  .groupRow {
+    grid-template-columns: 1fr; /* В одну колонку */
+    gap: 0.5rem;
+  }
+  
+  .actions {
+    justify-content: flex-start; /* Кнопка слева на мобилках */
+    margin-top: 0.5rem;
+  }
+}
+
+/* Контейнер для кнопки, чтобы она всегда была прижата к правому краю */
+.actions {
+  display: flex;
+  justify-content: flex-end;
 }
 
 .groupRow:last-child {

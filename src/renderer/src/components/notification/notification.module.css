@@ -3,7 +3,7 @@
   top: 10px;
   right: 10px;
   width: 200px;
-  height: 100px;
+  min-height: 100px;
   border: 1px solid;
   color: #fff;
   background-color: rgb(221, 65, 65);

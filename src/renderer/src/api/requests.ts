@@ -1,9 +1,9 @@
 import axios from 'axios'
 
-const DEV_URL = 'vgppk-server.onrender.com'
+const DEV_URL = 'http://127.0.0.1:8000/api/'
 
 export const $api = axios.create({
-  baseURL: `https://${DEV_URL}/`,
+  baseURL: DEV_URL,
   timeout: 10000
 })
 
@@ -30,12 +30,17 @@ type importStudentsT = {
   teacher_name: string
   academic_year: string
   students: string[]
-  specialty: string
 }
 
 export const importStudents = (studentsData: importStudentsT) =>
   $api
     .post(`/groups/import`, studentsData)
+    .then((res) => res.data)
+    .catch((err) => console.log(err))
+
+export const addSpecialtyToGroupRequest = (group_id: number, specialty_id: number) =>
+  $api
+    .post(`/groups/addSpecialty`, { group_id, specialty_id })
     .then((res) => res.data)
     .catch((err) => console.log(err))
 
@@ -73,6 +78,15 @@ export const createSpecialty = (
       specialty,
       qualification
     })
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const deleteSpecialty = (id: number): Promise<any> =>
+  $api
+    .delete(`/specialties/${id}`)
     .then((res) => res.data)
     .catch((err) => {
       console.error(err)

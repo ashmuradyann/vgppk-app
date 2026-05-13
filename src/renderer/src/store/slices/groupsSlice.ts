@@ -6,12 +6,18 @@ interface Student {
   group_id: number
 }
 
+interface Specialty {
+  specialty: string
+  qualification: string
+  code: string
+}
+
 interface Group {
   id: number
   name: string
   teacher_name: string
   students?: Student[]
-  specialty?: { name: string }
+  specialty: Specialty
 }
 
 export interface GroupsState {
@@ -56,6 +62,11 @@ const groupsSlice = createSlice({
           (s) => s.id !== action.payload
         )
       }
+    },
+    addSpecialtyToGroupStore: (state, action: PayloadAction<Specialty>) => {
+      if (state.currentGroup !== null) {
+        state.currentGroup.specialty = action.payload
+      }
     }
   }
 })
@@ -66,7 +77,8 @@ export const {
   removeStudentFromCurrent,
   createGroup,
   deleteGroup,
-  addStudent // Don't forget to export this!
+  addStudent,
+  addSpecialtyToGroupStore
 } = groupsSlice.actions
 
 export default groupsSlice.reducer
