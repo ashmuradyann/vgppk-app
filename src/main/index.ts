@@ -43,6 +43,18 @@ function createWindow(): void {
   }
 }
 
+// Эти флаги ДОЛЖНЫ быть перед app.whenReady()
+app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
+app.commandLine.appendSwitch('disable-web-security')
+app.commandLine.appendSwitch('disable-site-isolation-trials')
+app.commandLine.appendSwitch('ignore-certificate-errors')
+
+// Добавьте ЭТОТ флаг специально для CORS
+app.commandLine.appendSwitch('disable-features', 'CrossSiteDocumentBlockingAlways')
+app.commandLine.appendSwitch('disable-features', 'CrossSiteDocumentBlockingIfIsolating')
+
+process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true'
+
 app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
@@ -80,3 +92,5 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+
