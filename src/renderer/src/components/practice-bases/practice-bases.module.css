@@ -1,7 +1,7 @@
 /* Основной контейнер */
 .content {
   padding: 2rem;
-  max-width: 1000px;
+  width: 100%;
   margin: 0 auto;
   font-family:
     'Inter',
@@ -25,7 +25,6 @@
   margin: 0;
   font-size: 1.8rem;
   color: #1a1a1a;
-  font-weight: 700;
 }
 
 /* Белая карточка-таблица */
@@ -57,12 +56,18 @@
 
 /* Строка списка (Link) */
 .groupRow {
-  display: block;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 1fr;
   padding: 1.2rem 1.5rem;
   border-bottom: 1px solid #f0f0f0;
   text-decoration: none; /* Убираем подчеркивание ссылки */
   color: inherit;
   transition: background-color 0.2s ease;
+
+  div {
+    display: flex;
+    justify-content: flex-end;
+  }
 }
 
 .groupRow:last-child {
@@ -93,6 +98,37 @@
   color: #94a3b8;
   font-size: 1.1rem;
   background: #fff;
+}
+
+.btn {
+  background: none;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.2s;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+}
+
+.editBtn {
+  color: #4472ef;
+}
+
+.deleteBtn {
+  color: #ef4444;
+}
+
+.editBtn:hover {
+  background: #e2e9fe;
+  color: #2651dc;
+}
+
+.deleteBtn:hover {
+  background: #fee2e2;
+  color: #dc2626;
 }
 
 :global(.btn-primary) {

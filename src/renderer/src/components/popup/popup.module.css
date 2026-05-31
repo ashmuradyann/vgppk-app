@@ -61,6 +61,14 @@
         flex-direction: column;
         gap: 0.7rem;
 
+        input[type="text"], textarea {
+          width: 100%;
+        }
+
+        textarea {
+          min-height: 100px;
+        }
+
         .inputGroup {
           display: flex;
           flex-direction: column;
@@ -84,6 +92,20 @@
             background: #e2e8f0;
             border-radius: 10px;
           }
+        }
+
+        .practice__bases_select {
+          padding: 10px 0;
+          width: 100%;
+          border: 2px solid rgb(226, 226, 226);
+          border-left: none;
+          border-right: none;
+        }
+
+        .date__wrapper {
+          width: 100%;
+          justify-content: flex-start;
+          gap: 10px;
         }
 
         .radio__card {
@@ -183,7 +205,7 @@
         }
       }
 
-      input {
+      input, textarea {
         width: 100%;
         padding: 0.75rem;
         border: 1.5px solid #e2e8f0;

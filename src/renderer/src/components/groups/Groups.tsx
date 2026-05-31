@@ -45,7 +45,7 @@ const Groups = () => {
       <div className={styles.top}>
         <h1>Учебные группы</h1>
         <button className="btn-primary" onClick={createGroup}>
-          + Импорт группы
+          Импорт
         </button>
       </div>
 

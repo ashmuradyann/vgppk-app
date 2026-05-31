@@ -3,7 +3,8 @@ import { createSlice } from '@reduxjs/toolkit'
 const popupsState = {
   generalInfo: {
     isOpen: false,
-    popupType: ''
+    popupType: '',
+    popupStatus: ''
   },
   popupInfo: {
     popupName: ''
@@ -17,6 +18,7 @@ const popupSlice = createSlice({
     setPopupData: (state, action) => {
       state.generalInfo.isOpen = action.payload.isOpen
       state.generalInfo.popupType = action.payload.popupType
+      state.generalInfo.popupStatus = action.payload.popupStatus
 
       state.popupInfo.popupName = action.payload.popupName
     },

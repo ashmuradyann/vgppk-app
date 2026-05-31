@@ -28,7 +28,7 @@ const AddStudent = () => {
         group_id: Number(id)
       }).then((res) => {
         showNotify(true, `Студент ${res.student_name} добавлен в группу ${res.group_id}.`)
-        dispatch(addStudent({ id: res.id, full_name: res.full_name, group_id: res.group_id }))
+        dispatch(addStudent({ id: res.id, full_name: res.full_name, student_group_id: res.group_id }))
       })
 
       dispatch(closePopup())

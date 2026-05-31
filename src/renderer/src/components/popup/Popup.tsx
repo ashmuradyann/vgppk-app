@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom';
 import clsx from 'clsx'
 
 import { RootState } from '@renderer/store/store'
@@ -19,9 +20,11 @@ const Popup = ({ children }: PopupProps) => {
   const {
     popupInfo: { popupName }
   } = useSelector((state: RootState) => state.popups)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const closePopupFunc = () => {
     dispatch(closePopup())
+    setSearchParams({})
   }
 
   return (

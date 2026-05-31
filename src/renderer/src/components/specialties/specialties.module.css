@@ -1,7 +1,7 @@
 /* Основной контейнер */
 .content {
   padding: 2rem;
-  max-width: 1000px;
+  width: 100%;
   margin: 0 auto;
   font-family: 'Inter', sans-serif;
   color: #333;
@@ -51,11 +51,6 @@
 /* Строка специальности (ссылка) */
 .groupRow {
   display: grid;
-  /* 
-     1.2fr — для названия (пошире)
-     1fr   — для квалификации
-     auto  — для кнопки (по размеру контента) 
-  */
   grid-template-columns: 1.2fr 1fr auto; 
   padding: 1rem 1.5rem;
   border-bottom: 1px solid #f0f0f0;

@@ -3,21 +3,32 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 interface Student {
   id: number // Changed to number to match your component logic
   full_name: string
-  group_id: number
+  student_group_id: number
 }
 
 interface Specialty {
+  id: number | null
   specialty: string
   qualification: string
   code: string
 }
 
-interface Group {
+interface Practice {
   id: number
+  student_group_id: number
+  name: string
+  start_date: Date
+  end_date: Date
+  type: string
+}
+
+export interface Group {
+  id: number | null
   name: string
   teacher_name: string
   students?: Student[]
-  specialty: Specialty
+  specialty?: Specialty
+  practices?: Practice[]
 }
 
 export interface GroupsState {
@@ -27,7 +38,19 @@ export interface GroupsState {
 
 const initialState: GroupsState = {
   groups: [],
-  currentGroup: null
+  currentGroup: {
+    id: null,
+    name: '',
+    teacher_name: '',
+    students: [],
+    specialty: {
+      id: null,
+      specialty: '',
+      qualification: '',
+      code: ''
+    },
+    practices: []
+  }
 }
 
 const groupsSlice = createSlice({
@@ -43,10 +66,8 @@ const groupsSlice = createSlice({
     createGroup: (state, action: PayloadAction<Group>) => {
       state.groups.push(action.payload)
     },
-    // FIX 1: state.groups is an ARRAY. You must find the specific group first.
-    // Or, more commonly, add the student to the currentGroup being viewed.
     addStudent: (state, action: PayloadAction<Student>) => {
-      if (state.currentGroup && state.currentGroup.id === action.payload.group_id) {
+      if (state.currentGroup && state.currentGroup.id === action.payload.student_group_id) {
         state.currentGroup.students?.push(action.payload)
       }
     },
@@ -63,9 +84,24 @@ const groupsSlice = createSlice({
         )
       }
     },
+    removePracticeFromCurrent: (state, action: PayloadAction<number>) => {
+      if (state.currentGroup && state.currentGroup.practices) {
+        state.currentGroup.practices = state.currentGroup.practices.filter(
+          (s) => s.id !== action.payload
+        )
+      }
+    },
     addSpecialtyToGroupStore: (state, action: PayloadAction<Specialty>) => {
       if (state.currentGroup !== null) {
         state.currentGroup.specialty = action.payload
+      }
+    },
+    addPractice: (state, action: PayloadAction<Practice>) => {
+      if (state.currentGroup !== null) {
+        if (!state.currentGroup.practices) {
+          state.currentGroup.practices = []
+        }
+        state.currentGroup.practices.push(action.payload)
       }
     }
   }
@@ -75,10 +111,12 @@ export const {
   setGroups,
   setCurrentGroup,
   removeStudentFromCurrent,
+  removePracticeFromCurrent,
   createGroup,
   deleteGroup,
   addStudent,
-  addSpecialtyToGroupStore
+  addSpecialtyToGroupStore,
+  addPractice,
 } = groupsSlice.actions
 
 export default groupsSlice.reducer

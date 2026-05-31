@@ -2,42 +2,29 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
 import { setPopupData } from '@renderer/store/slices/popupSlice'
-import { removeSpecialty, setSpecialties } from '@renderer/store/slices/specialtiesSlice'
+import { removeSpecialty } from '@renderer/store/slices/specialtiesSlice'
 import { RootState } from '@renderer/store/store'
-import { deleteSpecialty, getSpecialties } from '@renderer/api/requests'
+import { deleteSpecialty } from '@renderer/api/requests'
 
 import styles from './specialties.module.css'
 import clsx from 'clsx'
 import { useShowNotification } from '@renderer/utils/helpers'
+import { useSearchParams } from 'react-router-dom'
 
 const Specialties = () => {
-  const showNotify = useShowNotification()
   const dispatch = useDispatch()
+  const showNotify = useShowNotification()
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const { specialties } = useSelector((state: RootState) => state.specialties)
 
-  useEffect(() => {
-    const fetchSpecialties = async () => {
-      if (specialties && specialties.length > 0) {
-        return
-      }
-
-      try {
-        const response = await getSpecialties()
-        dispatch(setSpecialties(response.data))
-      } catch (error) {
-        console.error('Не удалось загрузить специальности:', error)
-      }
-    }
-
-    fetchSpecialties()
-  }, [dispatch, specialties])
-
-  const openSpecialtyPopup = () => {
+  const openSpecialtyPopup = (status: string) => {
     dispatch(
       setPopupData({
         isOpen: true,
         popupType: 'creatingSpecialty',
-        popupName: 'Создание специальности'
+        popupName: `${status === 'editing' ? 'Обновление' : 'Создание'} специальности`,
+        popupStatus: status
       })
     )
   }
@@ -52,20 +39,29 @@ const Specialties = () => {
     }
   }
 
+  const handleEdit = (el) => {
+    setSearchParams((prev: URLSearchParams) => {
+      prev.set('id', el.id)
+      prev.set('code', el.code)
+      prev.set('specialty', el.specialty)
+      prev.set('qualification', el.qualification)
+      return prev
+    })
+    openSpecialtyPopup('editing')
+  }
+
   return (
     <div className={styles.content}>
       <div className={styles.top}>
         <h1>Специальности</h1>
-        <button className="btn-primary" onClick={openSpecialtyPopup}>
-          + Создать
+        <button className="btn-primary" onClick={() => openSpecialtyPopup('creating')}>
+          Создать
         </button>
       </div>
 
       <div className={styles.bottom}>
-        {/* Шапка таблицы с двумя колонками */}
         <div className={styles.headerRow}>
-          <p>Код и название</p>
-          <p>Квалификация</p>
+          <p>Код и наименование специальности, Квалификация</p>
         </div>
 
         {specialties && specialties.length > 0 ? (
@@ -82,10 +78,7 @@ const Specialties = () => {
               <div className={styles.actions}>
                 <button
                   className={clsx(styles.btn, styles.editBtn)}
-                  onClick={(e) => {
-                    e.preventDefault() // Чтобы не срабатывал переход по ссылке, если строка — ссылка
-                    // ваша функция удаления, например: onDelete(el.id)
-                  }}
+                  onClick={(e) => handleEdit(el)}
                 >
                   Редактировать
                 </button>

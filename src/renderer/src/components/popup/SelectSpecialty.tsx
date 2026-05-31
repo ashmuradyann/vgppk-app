@@ -1,4 +1,4 @@
-import React, { FormEvent, useState } from 'react'
+import React, { FormEvent, useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { closePopup } from '@renderer/store/slices/popupSlice'
 import { useShowNotification } from '@renderer/utils/helpers'
@@ -6,24 +6,38 @@ import { RootState } from '@renderer/store/store'
 
 import styles from './popup.module.css'
 import clsx from 'clsx'
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { addSpecialtyToGroupRequest } from '@renderer/api/requests'
 import { addSpecialtyToGroupStore } from '@renderer/store/slices/groupsSlice'
 
 const SelectSpecialty = () => {
   const { id } = useParams()
   const { specialties } = useSelector((state: RootState) => state.specialties)
+  const {
+    generalInfo: { popupStatus }
+  } = useSelector((state: RootState) => state.popups)
+  const [searchParams, setSearchParams] = useSearchParams()
+
   const [selectedSpec, setSelectedSpec] = useState<any>(null)
   const dispatch = useDispatch()
   const showNotify = useShowNotification()
+
+  useEffect(() => {
+    if (popupStatus === 'editing') {
+      const editId = searchParams.get('id')
+      if (editId) {
+        const matchedSpecialty = specialties.find(specialty => specialty.id === Number(editId))
+        setSelectedSpec(matchedSpecialty)
+      }
+    }
+  }, [popupStatus, searchParams])
 
   const formSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!selectedSpec.id) return showNotify(false, 'Выберите специальность')
 
     try {
-      // dispatch(createStudent(...))
-      await addSpecialtyToGroupRequest(Number(id), selectedSpec.id).then(res => {
+      await addSpecialtyToGroupRequest(Number(id), selectedSpec.id).then((res) => {
         showNotify(true, 'Специальность добавлен в группу')
         dispatch(addSpecialtyToGroupStore(selectedSpec))
         dispatch(closePopup())
@@ -38,7 +52,10 @@ const SelectSpecialty = () => {
     <form onSubmit={formSubmit} className="flex-column">
       <div className={styles.radios__wrapper}>
         {specialties.map((el, i) => (
-          <label key={i} className={clsx(styles.radio__card, selectedSpec?.id === el.id && styles.active)}>
+          <label
+            key={i}
+            className={clsx(styles.radio__card, selectedSpec?.id === el.id && styles.active)}
+          >
             <input
               type="radio"
               name="specialty"
@@ -56,7 +73,7 @@ const SelectSpecialty = () => {
         ))}
       </div>
       <button type="submit" disabled={!selectedSpec?.id}>
-        Добавить
+        {popupStatus === 'editing' ? "Изменить" : "Выбрать"}
       </button>
     </form>
   )
