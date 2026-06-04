@@ -26,7 +26,7 @@ const SelectSpecialty = () => {
     if (popupStatus === 'editing') {
       const editId = searchParams.get('id')
       if (editId) {
-        const matchedSpecialty = specialties.find(specialty => specialty.id === Number(editId))
+        const matchedSpecialty = specialties?.find(specialty => specialty.id === Number(editId))
         setSelectedSpec(matchedSpecialty)
       }
     }
@@ -51,7 +51,7 @@ const SelectSpecialty = () => {
   return (
     <form onSubmit={formSubmit} className="flex-column">
       <div className={styles.radios__wrapper}>
-        {specialties.map((el, i) => (
+        {specialties?.length === 0 ? <div className={styles.emptyState}>Список практик пуст</div> : specialties?.map((el, i) => (
           <label
             key={i}
             className={clsx(styles.radio__card, selectedSpec?.id === el.id && styles.active)}

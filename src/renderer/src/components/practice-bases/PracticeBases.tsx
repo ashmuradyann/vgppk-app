@@ -36,7 +36,7 @@ const PracticeBases = () => {
       ?.split(', ')
       ?.map((el: string) => {
         var supervisorSplited = el.split('-')
-        return `${supervisorSplited[0]} (${supervisorSplited[1]})`
+        return `${supervisorSplited[0]} (${!!supervisorSplited[1] ? supervisorSplited[1] : "должность не указан"})`
       })
       .join(', ')
 
@@ -77,7 +77,7 @@ const PracticeBases = () => {
 
         {practiceBases && practiceBases.length > 0 ? (
           practiceBases.map((el: any) => (
-            <div key={el.code} className={styles.groupRow}>
+            <div key={el.id} className={styles.groupRow}>
               <p className={styles.groupName}>
                 <span style={{ color: '#718096', marginRight: '8px' }}>{el.organisation}</span>
                 {el.address}

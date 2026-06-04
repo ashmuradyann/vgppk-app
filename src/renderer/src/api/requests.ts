@@ -26,10 +26,20 @@ export const destroyGroup = (id: number) =>
     .then((res) => res.data)
     .catch((err) => console.log(err))
 
+export const updateGroupR = (id: number, name: string, course: number, teacher_name: string) =>
+  $api
+    .put(`/groups/${id}`, {
+      name,
+      course,
+      teacher_name
+    })
+    .then((res) => res.data)
+    .catch((err) => console.log(err))
+
 type importStudentsT = {
   name: string
+  course: number
   teacher_name: string
-  academic_year: string
   students: string[]
 }
 
@@ -59,6 +69,21 @@ export const createStudent = (studentT: studentT) =>
 export const deleteStudent = (id: number) =>
   $api
     .delete(`/students/${id}`)
+    .then((res) => res.data)
+    .catch((err) => console.log(err))
+
+export const updateStudentR = (
+  id: number,
+  full_name: string,
+  practice_base_id: number,
+  practice_supervisor: string
+) =>
+  $api
+    .put(`/students/update/${id}`, {
+      full_name,
+      practice_base_id,
+      practice_supervisor
+    })
     .then((res) => res.data)
     .catch((err) => console.log(err))
 
@@ -164,35 +189,6 @@ export const deletePracticeBase = (id: number): Promise<any> =>
       throw err
     })
 
-export const getStudentDocumentsR = (
-  id: number,
-  student_name: string,
-  group_number: string,
-  specialty: string,
-  qualification: string
-): Promise<any> =>
-  $api
-    .post(
-      `/student_documents`,
-      {
-        student_name,
-        group_number,
-        specialty,
-        qualification
-      },
-      {
-        responseType: 'blob',
-        headers: {
-          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        }
-      }
-    )
-    .then((res) => res.data)
-    .catch((err) => {
-      console.error(err)
-      throw err
-    })
-
 export const createPractice = (
   name: string,
   start_date: string,
@@ -213,9 +209,155 @@ export const createPractice = (
       throw err
     })
 
+export const updatePracticeR = (
+  id: number,
+  name: string,
+  start_date: string,
+  end_date: string,
+  type: string,
+  student_group_id: number
+): Promise<any> =>
+  $api
+    .put(`/groups/${student_group_id}/practices/${id}`, {
+      name,
+      start_date,
+      end_date,
+      type
+    })
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
 export const deletePractice = (student_group_id: number, practice_id: number): Promise<any> =>
   $api
     .delete(`/groups/${student_group_id}/practices/${practice_id}`)
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const getStudentCharacteristicR = (
+  student_id: number,
+  group_id: number,
+  practice_id: number
+): Promise<any> =>
+  $api
+    .post(
+      `/student_characteristic`,
+      {
+        student_id,
+        group_id,
+        practice_id
+      },
+      {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      }
+    )
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const getStudentCrtificatSheetR = (
+  student_id: number,
+  group_id: number,
+  practice_id: number
+): Promise<any> =>
+  $api
+    .post(
+      `/student_certificat_sheet`,
+      {
+        student_id,
+        group_id,
+        practice_id
+      },
+      {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      }
+    )
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const getReviewDocumentR = (
+  student_id: number,
+  group_id: number,
+  practice_id: number
+): Promise<any> =>
+  $api
+    .post(
+      `/review_document`,
+      {
+        student_id,
+        group_id,
+        practice_id
+      },
+      {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      }
+    )
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const getAgreementDocumentR = (
+  basesIds: number[],
+  group_id: number,
+  selectedPracticeId: number
+): Promise<any> =>
+  $api
+    .post(
+      `/agreement_document`,
+      {
+        basesIds: JSON.stringify(basesIds),
+        group_id,
+        selectedPracticeId
+      },
+      {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      }
+    )
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const getDirectionDocumentR = (group_id: number, selectedPracticeId: number): Promise<any> =>
+  $api
+    .post(
+      `/direction_document`,
+      {
+        group_id,
+        practice_id: selectedPracticeId
+      },
+      {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      }
+    )
     .then((res) => res.data)
     .catch((err) => {
       console.error(err)

@@ -1,17 +1,25 @@
-import React, { FormEvent, useEffect, useRef } from 'react'
+import React, { FormEvent, useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useParams, useSearchParams } from 'react-router-dom'
 
-import { createPractice, createStudent } from '@renderer/api/requests'
+import { createPractice, createStudent, updatePracticeR } from '@renderer/api/requests'
 
 import { RootState } from '@renderer/store/store'
 
 import { useShowNotification } from '@renderer/utils/helpers'
-import { addPractice, addStudent } from '@renderer/store/slices/groupsSlice'
+import { addPractice, addStudent, updatePracticeS } from '@renderer/store/slices/groupsSlice'
 import clsx from 'clsx'
 
 import styles from './popup.module.css'
 import { closePopup } from '@renderer/store/slices/popupSlice'
+
+// Тип для оригинальных данных
+type OriginalPracticeData = {
+  name: string
+  start_date: string
+  end_date: string
+  type: string
+}
 
 const AddPractice = () => {
   const { id } = useParams()
@@ -20,33 +28,67 @@ const AddPractice = () => {
   const showNotify = useShowNotification()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const { practiceBases } = useSelector((state: RootState) => state.practiceBases)
-
   const { currentGroup } = useSelector((state: RootState) => state.groups)
-  const formRef = useRef(null)
+  const formRef = useRef<any>(null)
 
   const {
     generalInfo: { popupStatus }
   } = useSelector((state: RootState) => state.popups)
 
+  const editId = searchParams.get('id')
+  
+  // Состояния для отслеживания оригинальных данных
+  const [originalData, setOriginalData] = useState<OriginalPracticeData | null>(null)
+
   useEffect(() => {
     if (popupStatus === 'editing') {
-      const editId = searchParams.get('id')
       if (editId && formRef.current) {
-        const formData = new FormData()
-        formData.set('practiceName', decodeURIComponent(searchParams.get('name') || ''))
-        formData.set('start_date', decodeURIComponent(searchParams.get('start_date') || ''))
-        formData.set('end_date', decodeURIComponent(searchParams.get('end_date') || ''))
-        formData.set('practice_type', decodeURIComponent(searchParams.get('type') || ''))
-
-        for (let [key, value] of formData.entries()) {
-          if (formRef.current[key]) {
-            formRef.current[key].value = value
-          }
+        const name = decodeURIComponent(searchParams.get('name') || '')
+        const start_date = decodeURIComponent(searchParams.get('start_date') || '')
+        const end_date = decodeURIComponent(searchParams.get('end_date') || '')
+        const type = decodeURIComponent(searchParams.get('type') || '')
+        
+        // Сохраняем оригинальные данные
+        setOriginalData({
+          name,
+          start_date,
+          end_date,
+          type
+        })
+        
+        // Заполняем форму
+        if (formRef.current['practiceName']) {
+          formRef.current['practiceName'].value = name
+        }
+        if (formRef.current['start_date']) {
+          formRef.current['start_date'].value = start_date
+        }
+        if (formRef.current['end_date']) {
+          formRef.current['end_date'].value = end_date
+        }
+        if (formRef.current['practice_type']) {
+          formRef.current['practice_type'].value = type
         }
       }
     }
-  }, [popupStatus, searchParams])
+  }, [popupStatus, searchParams, editId])
+
+  // Функция для проверки изменений
+  const hasDataChanged = (currentData: {
+    practiceName: string
+    start_date: string
+    end_date: string
+    practice_type: string
+  }): boolean => {
+    if (!originalData) return false
+
+    const nameChanged = currentData.practiceName !== originalData.name
+    const startDateChanged = currentData.start_date !== originalData.start_date
+    const endDateChanged = currentData.end_date !== originalData.end_date
+    const typeChanged = currentData.practice_type !== originalData.type
+
+    return nameChanged || startDateChanged || endDateChanged || typeChanged
+  }
 
   const formSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -61,24 +103,54 @@ const AddPractice = () => {
         end_date: string
         practice_type: string
       }
-      console.log(practiceName, start_date, end_date, practice_type)
 
       if (!!currentGroup) {
-        await createPractice(
-          practiceName,
-          start_date,
-          end_date,
-          practice_type,
-          currentGroup.id
-        ).then(({ practice: { id, name, student_group_id, type, start_date, end_date } }) => {
-          showNotify(true, `Практика ${name} добавлен в группу ${student_group_id}.`)
-          dispatch(addPractice({ id, name, student_group_id, type, start_date, end_date }))
-          console.log(currentGroup)
-          dispatch(closePopup())
-        })
+        if (popupStatus === 'editing') {
+          // Проверяем, были ли изменения
+          if (!hasDataChanged({ practiceName, start_date, end_date, practice_type })) {
+            showNotify(true, 'Нет изменений для сохранения')
+            dispatch(closePopup())
+            return
+          }
+
+          // Валидация ID
+          if (!editId) {
+            showNotify(false, 'ID практики не найден')
+            return
+          }
+
+          await updatePracticeR(
+            Number(editId),
+            practiceName,
+            start_date,
+            end_date,
+            practice_type,
+            currentGroup.id
+          ).then(({ practice: { id, name, student_group_id, type, start_date, end_date } }) => {
+            console.log({ id, name, student_group_id, type, start_date, end_date })
+            dispatch(updatePracticeS({ id, name, student_group_id, type, start_date, end_date }))
+            showNotify(true, `Практика ${name} успешно обновлена`)
+            dispatch(closePopup())
+          })
+        } else {
+          // Создание новой практики
+          await createPractice(
+            practiceName,
+            start_date,
+            end_date,
+            practice_type,
+            currentGroup.id
+          ).then(({ practice: { id, name, student_group_id, type, start_date, end_date } }) => {
+            showNotify(true, `Практика ${name} добавлена в группу ${student_group_id}.`)
+            dispatch(addPractice({ id, name, student_group_id, type, start_date, end_date }))
+            dispatch(closePopup())
+          })
+        }
+      } else {
+        showNotify(false, 'Группа не найдена')
       }
     } catch (err) {
-      showNotify(false, 'Не удалось создать группу')
+      showNotify(false, popupStatus === 'editing' ? 'Не удалось обновить практику' : 'Не удалось создать практику')
       console.log(err)
     }
   }
@@ -103,11 +175,7 @@ const AddPractice = () => {
           <option value="pdp">Производственная преддипломная практика</option>
         </select>
       </div>
-      {/* <div className={styles.practice__bases_select}>
-        <input type="text" placeholder="Поиск базы практик" />
-        <div className={styles.bases__radios}></div>
-      </div> */}
-      <button type="submit">Создать</button>
+      <button type="submit">{popupStatus === "editing" ? "Изменить" : "Создать"}</button>
     </form>
   )
 }

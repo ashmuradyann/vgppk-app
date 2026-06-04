@@ -4,6 +4,8 @@ interface Student {
   id: number // Changed to number to match your component logic
   full_name: string
   student_group_id: number
+  practice_base_id: number
+  practice_supervisor: string
 }
 
 interface Specialty {
@@ -24,6 +26,7 @@ interface Practice {
 
 export interface Group {
   id: number | null
+  course: number | null
   name: string
   teacher_name: string
   students?: Student[]
@@ -40,6 +43,7 @@ const initialState: GroupsState = {
   groups: [],
   currentGroup: {
     id: null,
+    course: null,
     name: '',
     teacher_name: '',
     students: [],
@@ -63,7 +67,10 @@ const groupsSlice = createSlice({
     setCurrentGroup: (state, action: PayloadAction<Group | null>) => {
       state.currentGroup = action.payload
     },
-    createGroup: (state, action: PayloadAction<Group>) => {
+    createGroup: (
+      state,
+      action: PayloadAction<{ id: number; name: string; course: number; teacher_name: string }>
+    ) => {
       state.groups.push(action.payload)
     },
     addStudent: (state, action: PayloadAction<Student>) => {
@@ -71,11 +78,27 @@ const groupsSlice = createSlice({
         state.currentGroup.students?.push(action.payload)
       }
     },
+    updateStudentS: (state, action: PayloadAction<Student>) => {
+      if (state.currentGroup) {
+        state.currentGroup.students = state.currentGroup.students?.map((el) =>
+          el.id === action.payload.id ? { ...el, ...action.payload } : el
+        )
+      }
+    },
     deleteGroup: (state, action: PayloadAction<number>) => {
       state.groups = state.groups.filter((el) => el.id !== action.payload)
       if (state.currentGroup?.id === action.payload) {
         state.currentGroup = null
       }
+    },
+    updateGroupS: (
+      state,
+      action: PayloadAction<{ id: number; name: string; course: number; teacher_name: string }>
+    ) => {
+      state.currentGroup = { ...state.currentGroup, ...action.payload }
+      state.groups = state.groups.map((el) =>
+        el.id === action.payload.id ? { ...el, ...action.payload } : el
+      )
     },
     removeStudentFromCurrent: (state, action: PayloadAction<number>) => {
       if (state.currentGroup && state.currentGroup.students) {
@@ -103,6 +126,13 @@ const groupsSlice = createSlice({
         }
         state.currentGroup.practices.push(action.payload)
       }
+    },
+    updatePracticeS: (state, action: PayloadAction<Practice>) => {
+      if (state.currentGroup) {
+        state.currentGroup.practices = state.currentGroup.practices?.map((el) =>
+          el.id === action.payload.id ? { ...el, ...action.payload } : el
+        )
+      }
     }
   }
 })
@@ -117,6 +147,9 @@ export const {
   addStudent,
   addSpecialtyToGroupStore,
   addPractice,
+  updateStudentS,
+  updatePracticeS,
+  updateGroupS
 } = groupsSlice.actions
 
 export default groupsSlice.reducer

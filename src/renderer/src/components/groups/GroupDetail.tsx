@@ -7,8 +7,12 @@ import {
   deletePractice,
   deleteStudent,
   destroyGroup,
+  getAgreementDocumentR,
+  getDirectionDocumentR,
   getGroupsById,
-  getStudentDocumentsR
+  getReviewDocumentR,
+  getStudentCharacteristicR,
+  getStudentCrtificatSheetR
 } from '@renderer/api/requests'
 
 import styles from './groups.module.css'
@@ -36,6 +40,9 @@ const GroupDetail = () => {
   const { practiceBases } = useSelector((state: RootState) => state.practiceBases)
 
   const [loading, setLoading] = useState(!currentGroup || currentGroup.id !== Number(id))
+  const [selectedPracticeId, setSelectedPracticeId] = useState<number | null>(
+    currentGroup?.practices?.at(-1)?.id
+  )
 
   useEffect(() => {
     const fetchGroup = async () => {
@@ -68,7 +75,7 @@ const GroupDetail = () => {
         showNotify(true, `Группа ${res.name} удалена!`)
 
         if (currentGroup !== null) {
-          dispatch(deleteGroup(currentGroup.id))
+          dispatch(deleteGroup(Number(currentGroup.id)))
         }
 
         dispatch(closePopup())
@@ -151,29 +158,6 @@ const GroupDetail = () => {
     )
   }
 
-  const getStudentDocumentsFunc = async (student: any) => {
-    await getStudentDocumentsR(
-      student.id,
-      student.full_name,
-      currentGroup.name,
-      currentGroup.specialty?.specialty,
-      currentGroup.specialty?.qualification
-    ).then((res) => {
-      const blob = new Blob([res], {
-        type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-      })
-
-      const url = window.URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = url
-      link.download = `Kharakteristika_${student.full_name}_${Date.now()}.docx`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      window.URL.revokeObjectURL(url)
-    })
-  }
-
   const getPracticeTypeText = (type) => {
     if (type === 'up') {
       return 'Учебная практика'
@@ -203,6 +187,124 @@ const GroupDetail = () => {
     )
   }
 
+  const handleEditStudent = (el) => {
+    setSearchParams((prev: URLSearchParams) => {
+      prev.set('id', el.id)
+      prev.set('student_name', el.full_name)
+      prev.set('practice_base_id', el.practice_base_id)
+      prev.set('practice_supervisor', el.practice_supervisor)
+      return prev
+    })
+    dispatch(
+      setPopupData({
+        isOpen: true,
+        popupType: 'creatingStudent',
+        popupName: 'Изменение студента',
+        popupStatus: 'editing'
+      })
+    )
+  }
+
+  const handleChangeGroupData = () => {
+    if (currentGroup === null) return
+    setSearchParams((prev: URLSearchParams) => {
+      prev.set('id', String(currentGroup.id))
+      prev.set('name', currentGroup.name)
+      prev.set('course', String(currentGroup.course))
+      prev.set('teacher_name', currentGroup.teacher_name)
+      return prev
+    })
+    dispatch(
+      setPopupData({
+        isOpen: true,
+        popupType: 'creatingGroup',
+        popupName: 'Изменение группы',
+        popupStatus: 'editing'
+      })
+    )
+  }
+
+  const getAgreementDocument = async () => {
+    if (!!currentGroup && !!currentGroup.students && selectedPracticeId !== null) {
+      const basesIds = currentGroup?.students
+        .map((el) => el.practice_base_id)
+        .filter((id): id is number => id !== null && id !== undefined)
+
+      await getAgreementDocumentR(basesIds, Number(currentGroup.id), selectedPracticeId).then(
+        (res) => {
+          const blob = new Blob([res], {
+            type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+          })
+
+          const url = window.URL.createObjectURL(blob)
+          const link = document.createElement('a')
+          link.href = url
+          link.download = `Dogovor_${currentGroup.name}.docx`
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+          window.URL.revokeObjectURL(url)
+        }
+      )
+    }
+  }
+
+  const saveBlobFile = (res, fileName) => {
+    const blob = new Blob([res], {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    })
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${fileName}.docx`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
+
+  const getStudentCertificatSheet = async (student: any) => {
+    if (currentGroup !== null) {
+      await getStudentCrtificatSheetR(
+        Number(student.id),
+        Number(currentGroup.id),
+        Number(selectedPracticeId)
+      ).then((res) => saveBlobFile(res, 'Attestacionni_list_' + student.full_name))
+    }
+  }
+
+  const getStudentCharacteristic = async (student: any) => {
+    if (currentGroup !== null) {
+      await getStudentCharacteristicR(
+        Number(student.id),
+        Number(currentGroup.id),
+        Number(selectedPracticeId)
+      ).then((res) => saveBlobFile(res, 'Kharakteristika_' + student.full_name))
+    }
+  }
+
+  const getReviewDocument = async (student: any) => {
+    const practiceBaseName = practiceBases.find((el) => el.id === student.practice_base_id)
+    if (currentGroup !== null) {
+      await getReviewDocumentR(
+        Number(student.id),
+        Number(currentGroup.id),
+        Number(selectedPracticeId)
+      ).then((res) =>
+        saveBlobFile(res, 'Review_' + currentGroup.name + '_' + practiceBaseName?.organisation)
+      )
+    }
+  }
+
+  const getDirectionDocument = async (practiceId) => {
+    if (currentGroup !== null) {
+      getDirectionDocumentR(Number(currentGroup.id), Number(practiceId)).then((res) =>
+        saveBlobFile(res, 'Направления группы ' + currentGroup.name)
+      )
+    }
+  }
+
   if (loading) return <div className={styles.loader}>Загрузка...</div>
   if (!currentGroup) return <div className={styles.error}>Группа не найдена</div>
 
@@ -212,7 +314,11 @@ const GroupDetail = () => {
         <div className={styles.info}>
           <h1>Группа: {currentGroup.name}</h1>
           <p className={styles.subtitle}>
-            <strong>Специальность:</strong>{' '}
+            <strong>Курс: </strong>
+            {currentGroup.course || <span>Не выбрано</span>}
+          </p>
+          <p className={styles.subtitle}>
+            <strong>Специальность: </strong>
             {currentGroup.specialty?.specialty || <span>Не выбрано</span>}
           </p>
           <p className={styles.subtitle}>
@@ -228,6 +334,9 @@ const GroupDetail = () => {
           </button>
           <button className="btn-primary" onClick={handleAddingSpecialty}>
             {!!currentGroup?.specialty?.id ? 'Изменить' : 'Выбрать'} специальность
+          </button>
+          <button className="btn-primary" onClick={handleChangeGroupData}>
+            Изменить данные группы
           </button>
           <button className="btn-primary" onClick={handleCreatingPractice}>
             Новая практика
@@ -263,35 +372,64 @@ const GroupDetail = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentGroup.practices && currentGroup.practices.length > 0 ? (
-                  currentGroup.practices.map((el) => {
-                    return (
-                      <tr key={el.id}>
-                        <td className={styles.nameCol}>{el.name}</td>
-                        <td className={styles.nameCol}>{getPracticeTypeText(el.type)}</td>
-                        <td className={styles.nameCol}>{String(el.start_date)}</td>
-                        <td className={styles.nameCol}>{String(el.end_date)}</td>
-                        <td className={styles.actionsCol}>
-                          <button className={styles.editBtn} onClick={() => {}}>
-                            Скачать договор
-                          </button>
-                          <button className={styles.editBtn} onClick={() => handleEditPractice(el)}>
-                            Редактировать
-                          </button>
-                          <button
-                            className={styles.deleteBtn}
-                            onClick={() => handlePracticeDelete(currentGroup.id, el.id, el.name)}
+                {currentGroup?.practices && currentGroup.practices.length > 0 ? (
+                  currentGroup.practices.map((el) => (
+                    <tr key={el.id}>
+                      <td className={styles.nameCol}>
+                        <div className={clsx(styles.radio__area, 'flex-center')}>
+                          <label
+                            className={clsx(
+                              styles.radio__card,
+                              selectedPracticeId === el.id && styles.active
+                            )}
                           >
-                            Удалить
-                          </button>
-                        </td>
-                      </tr>
-                    )
-                  })
+                            <input
+                              type="radio"
+                              name="practiceBase"
+                              value={el.id}
+                              onChange={(e) => setSelectedPracticeId(Number(e.target.value))}
+                            />
+                            <div className={styles.radio__custom}></div>
+                          </label>
+                          {el.name}
+                        </div>
+                      </td>
+                      <td className={styles.nameCol}>{getPracticeTypeText(el.type)}</td>
+                      <td className={styles.nameCol}>
+                        {String(el.start_date).replaceAll('-', '.')}
+                      </td>
+                      <td className={styles.nameCol}>{String(el.end_date).replaceAll('-', '.')}</td>
+                      <td className={styles.actionsCol}>
+                        <span className={clsx(styles.filesBtn, styles.filesBtnPractices)}>
+                          Скачать
+                          <div className={styles.files__wrapper}>
+                            <button className={styles.editBtn} onClick={getAgreementDocument}>
+                              Договор
+                            </button>
+                            <button
+                              className={styles.editBtn}
+                              onClick={() => getDirectionDocument(el.id)}
+                            >
+                              Направления
+                            </button>
+                          </div>
+                        </span>
+                        <button className={styles.editBtn} onClick={() => handleEditPractice(el)}>
+                          Редактировать
+                        </button>
+                        <button
+                          className={styles.deleteBtn}
+                          onClick={() => handlePracticeDelete(currentGroup.id, el.id, el.name)}
+                        >
+                          Удалить
+                        </button>
+                      </td>
+                    </tr>
+                  ))
                 ) : (
                   <tr>
                     <td colSpan={5} className={styles.emptyStateContainer}>
-                      <div className={styles.emptyState}>Список практик пуст</div>
+                      <div className={styles.emptyStateInner}>Список практик пуст</div>
                     </td>
                   </tr>
                 )}
@@ -334,13 +472,29 @@ const GroupDetail = () => {
                     <span className={styles.filesBtn}>
                       Скачать
                       <div className={styles.files__wrapper}>
-                        <button className={styles.editBtn}>Аттестационный лист</button>
-                        <button className={styles.editBtn}>Направление</button>
-                        <button className={styles.editBtn}>Отзыв</button>
-                        <button className={styles.editBtn}>Характеристика</button>
+                        <button
+                          className={styles.editBtn}
+                          onClick={() => getStudentCertificatSheet(student)}
+                        >
+                          Аттестационный лист
+                        </button>
+                        <button
+                          className={styles.editBtn}
+                          onClick={() => getStudentCharacteristic(student)}
+                        >
+                          Характеристика
+                        </button>
+                        <button
+                          className={styles.editBtn}
+                          onClick={() => getReviewDocument(student)}
+                        >
+                          Отзыв
+                        </button>
                       </div>
                     </span>
-                    <button className={styles.editBtn}>Редактировать</button>
+                    <button className={styles.editBtn} onClick={() => handleEditStudent(student)}>
+                      Редактировать
+                    </button>
                     <button
                       className={styles.deleteBtn}
                       onClick={() => handleStudentDelete(student.id)}

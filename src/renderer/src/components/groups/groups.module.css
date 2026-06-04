@@ -42,6 +42,71 @@
   border: 1px solid #e5e7eb;
 }
 
+.nameCol:has(.radio__card) {
+  justify-content: flex-start;
+  gap: 10px;
+  padding-left: 10px;
+}
+
+.radio__area {
+  justify-content: flex-start;
+  gap: 10px;
+  width: 100%;
+}
+
+.radio__card {
+  width: fit-content;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+
+  &:hover {
+    border-color: #cbd5e1;
+  }
+
+  &.active {
+    border-color: #2563eb;
+  }
+
+  input[type='radio'] {
+    display: none;
+  }
+
+  .radio__custom {
+    min-width: 20px;
+    height: 20px;
+    border: 2px solid #cbd5e1;
+    border-radius: 50%;
+    margin-top: 3px;
+    position: relative;
+    transition: all 0.2s ease;
+    margin: auto;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      width: 10px;
+      height: 10px;
+      background-color: #2563eb;
+      border-radius: 50%;
+      transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+  }
+
+  &.active .radio__custom {
+    border-color: #2563eb;
+    &::after {
+      transform: translate(-50%, -50%) scale(1);
+    }
+  }
+}
+
 /* Шапка таблицы */
 .headerRow {
   padding: 1.2rem 1.5rem;
@@ -243,6 +308,9 @@
 
 .table td {
   padding: 1rem 1.5rem;
+}
+
+.table tr {
   border-bottom: 1px solid #f0f0f0;
 }
 
@@ -268,7 +336,8 @@
 }
 
 /* Стили для кнопок действий */
-.editBtn, .filesBtn {
+.editBtn,
+.filesBtn {
   background: none;
   border: none;
   color: #4480ef;
@@ -280,12 +349,20 @@
   font-size: 14px;
 }
 
-.editBtn:hover, .filesBtn:hover {
+.editBtn:hover,
+.filesBtn:hover {
   background: #e2f4fe;
 }
 
 .filesBtn {
   position: relative;
+
+  &.filesBtnPractices {
+    .files__wrapper {
+      top: -130%;
+      left: -180%;
+    }
+  }
 
   .files__wrapper {
     padding: 5px;
@@ -299,8 +376,8 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
-    transition: .3s;
-    
+    transition: 0.3s;
+
     button {
       padding: 10px 15px;
       font-size: 14px;
@@ -352,6 +429,14 @@
 }
 
 .emptyState {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #94a3b8;
+  font-size: 1.1rem;
+  background: #fff;
+}
+
+.emptyStateInner {
   display: inline-block;
   font-size: 16px;
   color: #888888;
