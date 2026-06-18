@@ -73,20 +73,20 @@ const groupsSlice = createSlice({
     ) => {
       state.groups.push(action.payload)
     },
-    addStudent: (state, action: PayloadAction<Student>) => {
+    addStudent: (state, action: PayloadAction<any>) => {
       if (state.currentGroup && state.currentGroup.id === action.payload.student_group_id) {
         state.currentGroup.students?.push(action.payload)
       }
     },
-    updateStudentS: (state, action: PayloadAction<Student>) => {
+    updateStudentS: (state, action: PayloadAction<any>) => {
       if (state.currentGroup) {
-        state.currentGroup.students = state.currentGroup.students?.map((el) =>
+        state.currentGroup.students = state.currentGroup.students?.map((el: any) =>
           el.id === action.payload.id ? { ...el, ...action.payload } : el
         )
       }
     },
     deleteGroup: (state, action: PayloadAction<number>) => {
-      state.groups = state.groups.filter((el) => el.id !== action.payload)
+      state.groups = state.groups.filter((el: any) => el.id !== action.payload)
       if (state.currentGroup?.id === action.payload) {
         state.currentGroup = null
       }
@@ -96,7 +96,7 @@ const groupsSlice = createSlice({
       action: PayloadAction<{ id: number; name: string; course: number; teacher_name: string }>
     ) => {
       state.currentGroup = { ...state.currentGroup, ...action.payload }
-      state.groups = state.groups.map((el) =>
+      state.groups = state.groups.map((el: any) =>
         el.id === action.payload.id ? { ...el, ...action.payload } : el
       )
     },
@@ -129,7 +129,7 @@ const groupsSlice = createSlice({
     },
     updatePracticeS: (state, action: PayloadAction<Practice>) => {
       if (state.currentGroup) {
-        state.currentGroup.practices = state.currentGroup.practices?.map((el) =>
+        state.currentGroup.practices = state.currentGroup.practices?.map((el: any) =>
           el.id === action.payload.id ? { ...el, ...action.payload } : el
         )
       }

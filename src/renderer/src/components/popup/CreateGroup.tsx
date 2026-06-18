@@ -28,7 +28,7 @@ const CreateGroup = () => {
 
   const [originalData, setOriginalData] = useState<OriginalPracticeData | null>(null)
 
-  const formRef = useRef(null)
+  const formRef = useRef<null | HTMLFormElement>(null)
 
   const {
     generalInfo: { popupStatus }

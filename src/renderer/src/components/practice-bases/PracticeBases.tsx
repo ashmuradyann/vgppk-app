@@ -41,7 +41,7 @@ const PracticeBases = () => {
       .join(', ')
 
   const handlePracticeBaseDelete = async (id) => {
-    const confirmed = await window.api.confirmAction('Подтвердите действие')
+    const confirmed = await (window as any).api.confirmAction('Подтвердите действие')
     if (confirmed) {
       deletePracticeBase(Number(id)).then((res) => {
         showNotify(true, `Студент ${res.organisation} удален!`)
@@ -50,7 +50,7 @@ const PracticeBases = () => {
     }
   }
 
-  const handleEdit = (el) => {
+  const handleEdit = (el: any) => {
     setSearchParams((prev: URLSearchParams) => {
       prev.set('id', el.id)
       prev.set('organisation', el.organisation)

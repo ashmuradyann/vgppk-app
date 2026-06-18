@@ -41,7 +41,7 @@ const GroupDetail = () => {
 
   const [loading, setLoading] = useState(!currentGroup || currentGroup.id !== Number(id))
   const [selectedPracticeId, setSelectedPracticeId] = useState<number | null>(
-    currentGroup?.practices?.at(-1)?.id
+    currentGroup?.practices?.at(-1)?.id ?? null
   )
 
   useEffect(() => {
@@ -68,7 +68,7 @@ const GroupDetail = () => {
   }, [id]) // currentGroup is now a dependency
 
   const removeGroup = async () => {
-    const confirmed = await window.api.confirmAction('Подтвердите действие')
+    const confirmed = await (window as any).api.confirmAction('Подтвердите действие')
 
     if (confirmed) {
       destroyGroup(Number(id)).then((res) => {
@@ -92,7 +92,7 @@ const GroupDetail = () => {
   }
 
   const handleStudentDelete = async (studentId) => {
-    const confirmed = await window.api.confirmAction('Подтвердите действие')
+    const confirmed = await (window as any).api.confirmAction('Подтвердите действие')
     if (confirmed) {
       deleteStudent(Number(studentId)).then((res) => {
         showNotify(true, `Студент ${res.name} удален!`)
@@ -102,7 +102,7 @@ const GroupDetail = () => {
   }
 
   const handlePracticeDelete = async (student_group_id, practice_id, name) => {
-    const confirmed = await window.api.confirmAction('Подтвердите действие')
+    const confirmed = await (window as any).api.confirmAction('Подтвердите действие')
     if (confirmed) {
       deletePractice(student_group_id, practice_id).then((res) => {
         showNotify(true, `Практика ${name} удалена!`)
@@ -145,10 +145,6 @@ const GroupDetail = () => {
   }
 
   const handleCreatingPractice = () => {
-    // if (practiceBases?.length === 0) {
-    //   showNotify(false, 'Сначала создайте базу практики')
-    //   return
-    // }
     dispatch(
       setPopupData({
         isOpen: true,
@@ -158,7 +154,7 @@ const GroupDetail = () => {
     )
   }
 
-  const getPracticeTypeText = (type) => {
+  const getPracticeTypeText = (type: string) => {
     if (type === 'up') {
       return 'Учебная практика'
     } else if (type === 'pp') {
@@ -166,9 +162,10 @@ const GroupDetail = () => {
     } else if (type === 'pdp') {
       return 'Производственная практика (преддипломная)'
     }
+    return 'Учебная практика'
   }
 
-  const handleEditPractice = (el) => {
+  const handleEditPractice = (el: any) => {
     setSearchParams((prev: URLSearchParams) => {
       prev.set('id', el.id)
       prev.set('name', el.name)
@@ -187,7 +184,7 @@ const GroupDetail = () => {
     )
   }
 
-  const handleEditStudent = (el) => {
+  const handleEditStudent = (el: any) => {
     setSearchParams((prev: URLSearchParams) => {
       prev.set('id', el.id)
       prev.set('student_name', el.full_name)
@@ -227,7 +224,7 @@ const GroupDetail = () => {
   const getAgreementDocument = async () => {
     if (!!currentGroup && !!currentGroup.students && selectedPracticeId !== null) {
       const basesIds = currentGroup?.students
-        .map((el) => el.practice_base_id)
+        .map((el: any) => el.practice_base_id)
         .filter((id): id is number => id !== null && id !== undefined)
 
       await getAgreementDocumentR(basesIds, Number(currentGroup.id), selectedPracticeId).then(
@@ -285,7 +282,7 @@ const GroupDetail = () => {
   }
 
   const getReviewDocument = async (student: any) => {
-    const practiceBaseName = practiceBases.find((el) => el.id === student.practice_base_id)
+    const practiceBaseName = practiceBases.find((el: any) => el.id === student.practice_base_id)
     if (currentGroup !== null) {
       await getReviewDocumentR(
         Number(student.id),
@@ -373,7 +370,7 @@ const GroupDetail = () => {
               </thead>
               <tbody>
                 {currentGroup?.practices && currentGroup.practices.length > 0 ? (
-                  currentGroup.practices.map((el) => (
+                  currentGroup.practices.map((el: any) => (
                     <tr key={el.id}>
                       <td className={styles.nameCol}>
                         <div className={clsx(styles.radio__area, 'flex-center')}>
@@ -464,34 +461,36 @@ const GroupDetail = () => {
               </tr>
             </thead>
             <tbody>
-              {currentGroup.students?.map((student, index) => (
+              {currentGroup.students?.map((student: any, index: number) => (
                 <tr key={student.id}>
                   <td className={styles.indexCol}>{index + 1}</td>
                   <td className={styles.nameCol}>{student.full_name}</td>
                   <td className={styles.actionsCol}>
-                    <span className={styles.filesBtn}>
-                      Скачать
-                      <div className={styles.files__wrapper}>
-                        <button
-                          className={styles.editBtn}
-                          onClick={() => getStudentCertificatSheet(student)}
-                        >
-                          Аттестационный лист
-                        </button>
-                        <button
-                          className={styles.editBtn}
-                          onClick={() => getStudentCharacteristic(student)}
-                        >
-                          Характеристика
-                        </button>
-                        <button
-                          className={styles.editBtn}
-                          onClick={() => getReviewDocument(student)}
-                        >
-                          Отзыв
-                        </button>
-                      </div>
-                    </span>
+                    {student.practice_base_id !== null && (
+                      <span className={styles.filesBtn}>
+                        Скачать
+                        <div className={styles.files__wrapper}>
+                          <button
+                            className={styles.editBtn}
+                            onClick={() => getStudentCertificatSheet(student)}
+                          >
+                            Аттестационный лист
+                          </button>
+                          <button
+                            className={styles.editBtn}
+                            onClick={() => getStudentCharacteristic(student)}
+                          >
+                            Характеристика
+                          </button>
+                          <button
+                            className={styles.editBtn}
+                            onClick={() => getReviewDocument(student)}
+                          >
+                            Отзыв
+                          </button>
+                        </div>
+                      </span>
+                    )}
                     <button className={styles.editBtn} onClick={() => handleEditStudent(student)}>
                       Редактировать
                     </button>

@@ -51,7 +51,7 @@ const SelectSpecialty = () => {
   return (
     <form onSubmit={formSubmit} className="flex-column">
       <div className={styles.radios__wrapper}>
-        {specialties?.length === 0 ? <div className={styles.emptyState}>Список практик пуст</div> : specialties?.map((el, i) => (
+        {specialties?.length === 0 ? <div className={styles.emptyState}>Список практик пуст</div> : specialties?.map((el: any, i: number) => (
           <label
             key={i}
             className={clsx(styles.radio__card, selectedSpec?.id === el.id && styles.active)}

@@ -137,7 +137,7 @@ const AddStudent = () => {
         await updateStudentR(
           selectedBase.studentId,
           updateData.student_name,
-          updateData.practice_base_id,
+          Number(updateData.practice_base_id),
           updateData.practice_supervisor
         ).then((res) => {
           showNotify(true, 'Данные студента обновлены')
@@ -190,7 +190,7 @@ const AddStudent = () => {
   const handleSearchBase = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target
     setSearchedBases(
-      practiceBases.filter((el) => el.organisation.toLowerCase().includes(value.toLowerCase()))
+      practiceBases.filter((el: any) => el.organisation.toLowerCase().includes(value.toLowerCase()))
     )
   }
 
@@ -234,7 +234,7 @@ const AddStudent = () => {
 
           <div className={styles.radio__wrapper}>
             {searchedBases.length !== 0 ? (
-              searchedBases.map((el) => (
+              searchedBases.map((el: any) => (
                 <label
                   key={el.id}
                   className={clsx(styles.radio__card, selectedBase?.id === el.id && styles.active)}
@@ -266,7 +266,7 @@ const AddStudent = () => {
           {supervisorsForUse.length > 1 && selectedBase?.id != null && (
             <div className={styles.select__supervisor}>
               <p>Выбор руководителя</p>
-              {supervisorsForUse.map((supervisor) => (
+              {supervisorsForUse.map((supervisor: any) => (
                 <label
                   key={supervisor}
                   className={clsx(
@@ -278,7 +278,7 @@ const AddStudent = () => {
                     type="radio"
                     name={`practiceBase-${selectedBase.id}`}
                     value={supervisor}
-                    onChange={() => setSelectedBase((prev) => ({ ...prev, supervisor }))}
+                    onChange={() => setSelectedBase((prev: any) => ({ ...prev, supervisor }))}
                     checked={selectedBase?.supervisor === supervisor}
                   />
                   <div className={styles.radio__custom}></div>

@@ -36,7 +36,7 @@ const AddPractice = () => {
   } = useSelector((state: RootState) => state.popups)
 
   const editId = searchParams.get('id')
-  
+
   // Состояния для отслеживания оригинальных данных
   const [originalData, setOriginalData] = useState<OriginalPracticeData | null>(null)
 
@@ -47,7 +47,7 @@ const AddPractice = () => {
         const start_date = decodeURIComponent(searchParams.get('start_date') || '')
         const end_date = decodeURIComponent(searchParams.get('end_date') || '')
         const type = decodeURIComponent(searchParams.get('type') || '')
-        
+
         // Сохраняем оригинальные данные
         setOriginalData({
           name,
@@ -55,7 +55,7 @@ const AddPractice = () => {
           end_date,
           type
         })
-        
+
         // Заполняем форму
         if (formRef.current['practiceName']) {
           formRef.current['practiceName'].value = name
@@ -125,7 +125,7 @@ const AddPractice = () => {
             start_date,
             end_date,
             practice_type,
-            currentGroup.id
+            Number(currentGroup.id)
           ).then(({ practice: { id, name, student_group_id, type, start_date, end_date } }) => {
             console.log({ id, name, student_group_id, type, start_date, end_date })
             dispatch(updatePracticeS({ id, name, student_group_id, type, start_date, end_date }))
@@ -139,7 +139,7 @@ const AddPractice = () => {
             start_date,
             end_date,
             practice_type,
-            currentGroup.id
+            Number(currentGroup.id)
           ).then(({ practice: { id, name, student_group_id, type, start_date, end_date } }) => {
             showNotify(true, `Практика ${name} добавлена в группу ${student_group_id}.`)
             dispatch(addPractice({ id, name, student_group_id, type, start_date, end_date }))
@@ -150,14 +150,17 @@ const AddPractice = () => {
         showNotify(false, 'Группа не найдена')
       }
     } catch (err) {
-      showNotify(false, popupStatus === 'editing' ? 'Не удалось обновить практику' : 'Не удалось создать практику')
+      showNotify(
+        false,
+        popupStatus === 'editing' ? 'Не удалось обновить практику' : 'Не удалось создать практику'
+      )
       console.log(err)
     }
   }
 
   return (
     <form ref={formRef} onSubmit={formSubmit} className="flex-column">
-      <textarea name="practiceName" type="text" placeholder="Наименование практики" required />
+      <textarea name="practiceName" placeholder="Наименование практики" required />
       <div className={clsx(styles.date__wrapper, 'flex-between')}>
         <label htmlFor="">
           Дата начала
@@ -175,7 +178,7 @@ const AddPractice = () => {
           <option value="pdp">Производственная преддипломная практика</option>
         </select>
       </div>
-      <button type="submit">{popupStatus === "editing" ? "Изменить" : "Создать"}</button>
+      <button type="submit">{popupStatus === 'editing' ? 'Изменить' : 'Создать'}</button>
     </form>
   )
 }

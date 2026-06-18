@@ -30,7 +30,7 @@ const Specialties = () => {
   }
 
   const handleSpecialtyDelete = async (id: number) => {
-    const confirmed = await window.api.confirmAction('Подтвердите действие')
+    const confirmed = await (window as any).api.confirmAction('Подтвердите действие')
     if (confirmed) {
       await deleteSpecialty(id).then((res) => {
         showNotify(true, `Специальность ${res.name} удален.`)
@@ -39,7 +39,7 @@ const Specialties = () => {
     }
   }
 
-  const handleEdit = (el) => {
+  const handleEdit = (el: any) => {
     setSearchParams((prev: URLSearchParams) => {
       prev.set('id', el.id)
       prev.set('code', el.code)
@@ -65,7 +65,7 @@ const Specialties = () => {
         </div>
 
         {specialties && specialties.length > 0 ? (
-          specialties.map((el) => (
+          specialties.map((el: any) => (
             <div key={el.code} className={styles.groupRow}>
               <p className={styles.groupName}>
                 <span style={{ color: '#718096', marginRight: '8px' }}>{el.code}</span>

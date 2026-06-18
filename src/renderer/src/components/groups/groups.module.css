@@ -314,6 +314,14 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
+.table tr {
+  &:first-child {
+    .files__wrapper {
+      top: -260%;
+    }
+  }
+}
+
 .table tr:last-child td {
   border-bottom: none;
 }
@@ -360,7 +368,7 @@
   &.filesBtnPractices {
     .files__wrapper {
       top: -130%;
-      left: -180%;
+      left: -100%;
     }
   }
 
@@ -369,8 +377,8 @@
     border-radius: 12px;
     background-color: rgb(250, 250, 250);
     position: absolute;
-    top: -250%;
-    left: -250%;
+    top: -390%;
+    left: -150%;
     opacity: 0;
     pointer-events: none;
     display: flex;

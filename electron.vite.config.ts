@@ -10,12 +10,11 @@ export default defineConfig({
     plugins: [externalizeDepsPlugin()]
   },
   renderer: {
-    // РАЗРЕШАЕМ ДОСТУП К КОРНЕВОМУ SRC
     server: {
       fs: {
         allow: [
           resolve(__dirname, 'src/renderer'), // стандарт
-          resolve(__dirname, 'src/store')     // разрешаем твой стор
+          resolve(__dirname, 'src/store') // разрешаем твой стор
         ]
       }
     },

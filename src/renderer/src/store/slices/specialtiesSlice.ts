@@ -29,11 +29,11 @@ const specialtiesSlice = createSlice({
       state.specialties.push(action.payload)
     },
     editSpecialty: (state, action: PayloadAction<Specialty>) => {
-      state.specialties = state.specialties.filter((el) => el.id !== action.payload.id)
+      state.specialties = state.specialties.filter((el: any) => el.id !== action.payload.id)
       state.specialties.unshift(action.payload)
     },
     removeSpecialty: (state, action: PayloadAction<number>) => {
-      state.specialties = state.specialties.filter((el) => el.id !== action.payload)
+      state.specialties = state.specialties.filter((el: any) => el.id !== action.payload)
     }
   }
 })

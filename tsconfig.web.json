@@ -15,6 +15,8 @@
       "@renderer/*": ["src/renderer/src/*"],
       "@store/*": ["src/store/*"] // Теперь это путь от корня проекта
     },
-     "types": ["vite/client"],
+    "types": ["vite/client"],
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
   }
 }

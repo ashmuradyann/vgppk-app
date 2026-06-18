@@ -29,11 +29,11 @@ const practiceBasesSlice = createSlice({
       state.practiceBases.unshift(action.payload)
     },
     editPracticeBase: (state, action: PayloadAction<PracticeBase>) => {
-      state.practiceBases = state.practiceBases.filter((el) => el.id !== action.payload.id)
+      state.practiceBases = state.practiceBases.filter((el: any) => el.id !== action.payload.id)
       state.practiceBases.unshift(action.payload)
     },
     removePracticeBase: (state, action: PayloadAction<number>) => {
-      state.practiceBases = state.practiceBases.filter((el) => el.id !== action.payload)
+      state.practiceBases = state.practiceBases.filter((el: any) => el.id !== action.payload)
     }
   }
 })

@@ -15,7 +15,7 @@ const AddSpecialty = () => {
   const showNotify = useShowNotification()
   const [searchParams, setSearchParams] = useSearchParams()
 
-  const formRef = useRef(null)
+  const formRef = useRef<null | HTMLFormElement>(null)
 
   const {
     generalInfo: { popupStatus }

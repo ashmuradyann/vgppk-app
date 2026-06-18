@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 const DEV_URL = 'http://127.0.0.1:8000/api'
+// const DEV_URL = 'https://muradyan.studio-av.ru/api'
 
 export const $api = axios.create({
   baseURL: DEV_URL,
