@@ -64,7 +64,7 @@
         .file__upload {
           width: 100%;
           gap: 10px;
-          
+
           button {
             padding: 10px 15px;
             width: fit-content;
@@ -94,17 +94,17 @@
           margin: auto;
           color: rgba(0, 0, 0, 0.4);
         }
-        
+
         &.select__practice {
           gap: 0;
           .search {
             border-radius: 12px 12px 0 0;
           }
 
-          input:first-child {
+          input:first-child,
+          input:nth-child(2) {
             margin-bottom: 10px;
           }
-
 
           .radio__wrapper {
             width: 100%;
@@ -250,6 +250,10 @@
             display: flex;
             gap: 5px;
 
+            &.radio__content_specialty {
+              align-items: flex-start;
+            }
+
             .spec-code {
               font-weight: 700;
               font-size: 0.85rem;
@@ -330,7 +334,7 @@
         }
 
         &:disabled {
-          opacity: .7;
+          opacity: 0.7;
         }
       }
     }

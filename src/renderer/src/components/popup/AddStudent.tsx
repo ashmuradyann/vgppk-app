@@ -22,6 +22,7 @@ type PracticeRadio = {
 // Add type for original data
 type OriginalData = {
   student_name: string
+  inner_supervisor: string
   practice_base_id: number | null
   practice_supervisor: string
 }
@@ -36,7 +37,6 @@ const AddStudent = () => {
 
   const [selectedBase, setSelectedBase] = useState<PracticeRadio | null>(null)
   const [originalData, setOriginalData] = useState<OriginalData | null>(null)
-  const [originalStudentName, setOriginalStudentName] = useState<string>('')
 
   const {
     generalInfo: { popupStatus }
@@ -48,15 +48,19 @@ const AddStudent = () => {
   const formRef = useRef<any>(null)
 
   const studentName = decodeURIComponent(searchParams.get('student_name') || '')
+  const innerSupervisor = decodeURIComponent(searchParams.get('inner_supervisor') || '')
 
   useEffect(() => {
     if (popupStatus === 'editing') {
       const editId = searchParams.get('id')
       if (editId && formRef.current) {
         const studentNameInput = formRef.current['student_name']
+        const innerSupervisorInput = formRef.current['inner_supervisor']
         if (studentNameInput) {
           studentNameInput.value = studentName
-          setOriginalStudentName(studentName) // Store original name
+        }
+        if (innerSupervisorInput) {
+          innerSupervisorInput.value = innerSupervisor
         }
 
         const practice_base_id = decodeURIComponent(searchParams.get('practice_base_id') || '')
@@ -69,6 +73,7 @@ const AddStudent = () => {
         // Store original data for comparison
         setOriginalData({
           student_name: studentName,
+          inner_supervisor: innerSupervisor,
           practice_base_id: baseId,
           practice_supervisor: practice_supervisor
         })
@@ -109,8 +114,9 @@ const AddStudent = () => {
 
     try {
       const formData = new FormData(e.currentTarget)
-      const { student_name } = Object.fromEntries(formData.entries()) as {
+      const { student_name, inner_supervisor } = Object.fromEntries(formData.entries()) as {
         student_name: string
+        inner_supervisor: string
       }
 
       if (popupStatus === 'editing') {
@@ -129,6 +135,7 @@ const AddStudent = () => {
         // Prepare update data
         const updateData = {
           student_name: student_name,
+          inner_supervisor: inner_supervisor,
           practice_base_id: selectedBase?.id || null,
           practice_supervisor: selectedBase?.supervisor || ''
         }
@@ -137,6 +144,7 @@ const AddStudent = () => {
         await updateStudentR(
           selectedBase.studentId,
           updateData.student_name,
+          updateData.inner_supervisor,
           Number(updateData.practice_base_id),
           updateData.practice_supervisor
         ).then((res) => {
@@ -145,6 +153,7 @@ const AddStudent = () => {
             updateStudentS({
               id: res.id,
               full_name: res.full_name,
+              inner_supervisor: res.inner_supervisor,
               practice_supervisor: res.practice_supervisor,
               practice_base_id: res.practice_base_id
             })
@@ -159,7 +168,13 @@ const AddStudent = () => {
         }).then((res) => {
           showNotify(true, `Студент ${res.student_name} добавлен в группу ${res.group_id}.`)
           dispatch(
-            addStudent({ id: res.id, full_name: res.full_name, student_group_id: res.group_id })
+            addStudent({
+              id: res.id,
+              full_name: res.full_name,
+              inner_supervisor: '',
+              student_group_id: res.group_id,
+              practice_base_id: null
+            })
           )
           dispatch(closePopup())
         })
@@ -225,6 +240,12 @@ const AddStudent = () => {
 
       {popupStatus === 'editing' && (
         <>
+          <input
+            name="inner_supervisor"
+            type="text"
+            placeholder="Руководитель практики от образовательного учреждения"
+            required
+          />
           <input
             type="text"
             className={styles.search}

@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 interface Student {
-  id: number // Changed to number to match your component logic
+  id: number
   full_name: string
+  inner_supervisor: string
   student_group_id: number
   practice_base_id: number
   practice_supervisor: string

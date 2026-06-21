@@ -8,11 +8,15 @@ import {
   deleteStudent,
   destroyGroup,
   getAgreementDocumentR,
-  getDirectionDocumentR,
   getGroupsById,
   getReviewDocumentR,
   getStudentCharacteristicR,
-  getStudentCrtificatSheetR
+  getStudentCertificatSheetR,
+  getCertificatSheetGroupR,
+  getCharacteristicGroupR,
+  getOrderingDocumentR,
+  getDirectionGroupDocumentR,
+  getDirectionDocumentR
 } from '@renderer/api/requests'
 
 import styles from './groups.module.css'
@@ -48,11 +52,6 @@ const GroupDetail = () => {
     const fetchGroup = async () => {
       if (!id) return
 
-      // if (currentGroup && currentGroup.id === Number(id)) {
-      //   setLoading(false)
-      //   return
-      // }
-
       try {
         setLoading(true)
         const data = await getGroupsById(Number(id))
@@ -65,7 +64,7 @@ const GroupDetail = () => {
     }
 
     fetchGroup()
-  }, [id]) // currentGroup is now a dependency
+  }, [id])
 
   const removeGroup = async () => {
     const confirmed = await (window as any).api.confirmAction('Подтвердите действие')
@@ -188,6 +187,7 @@ const GroupDetail = () => {
     setSearchParams((prev: URLSearchParams) => {
       prev.set('id', el.id)
       prev.set('student_name', el.full_name)
+      prev.set('inner_supervisor', el.inner_supervisor)
       prev.set('practice_base_id', el.practice_base_id)
       prev.set('practice_supervisor', el.practice_supervisor)
       return prev
@@ -221,8 +221,40 @@ const GroupDetail = () => {
     )
   }
 
+  const saveBlobFile = (res, fileName) => {
+    const blob = new Blob([res], {
+      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    })
+
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `${fileName}.docx`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
+
+  const detectIfSupervisorsSelected = () => {
+    if (currentGroup !== null && currentGroup?.students) {
+      const readyStudents = currentGroup.students.map((el: any) => {
+        return el.inner_supervisor !== null && el.practice_supervisor !== null
+      })
+      if (readyStudents.includes(false)) {
+        showNotify(false, 'Введите все данные студентов либо удалите студента')
+        return false
+      }
+      return true
+    }
+    return false
+  }
+
   const getAgreementDocument = async () => {
     if (!!currentGroup && !!currentGroup.students && selectedPracticeId !== null) {
+      if (!detectIfSupervisorsSelected()) {
+        return
+      }
       const basesIds = currentGroup?.students
         .map((el: any) => el.practice_base_id)
         .filter((id): id is number => id !== null && id !== undefined)
@@ -246,24 +278,12 @@ const GroupDetail = () => {
     }
   }
 
-  const saveBlobFile = (res, fileName) => {
-    const blob = new Blob([res], {
-      type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    })
-
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `${fileName}.docx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  }
-
   const getStudentCertificatSheet = async (student: any) => {
     if (currentGroup !== null) {
-      await getStudentCrtificatSheetR(
+      if (!detectIfSupervisorsSelected()) {
+        return
+      }
+      await getStudentCertificatSheetR(
         Number(student.id),
         Number(currentGroup.id),
         Number(selectedPracticeId)
@@ -271,13 +291,39 @@ const GroupDetail = () => {
     }
   }
 
+  const getCertificatSheetGroupF = async () => {
+    if (currentGroup !== null) {
+      if (!detectIfSupervisorsSelected()) {
+        return
+      }
+      await getCertificatSheetGroupR(Number(currentGroup.id), Number(selectedPracticeId)).then(
+        (res) => saveBlobFile(res, 'Attestacionni_list_' + currentGroup.name)
+      )
+    }
+  }
+
   const getStudentCharacteristic = async (student: any) => {
     if (currentGroup !== null) {
+      if (!detectIfSupervisorsSelected()) {
+        return
+      }
       await getStudentCharacteristicR(
         Number(student.id),
         Number(currentGroup.id),
         Number(selectedPracticeId)
       ).then((res) => saveBlobFile(res, 'Kharakteristika_' + student.full_name))
+    }
+  }
+
+  const getCharacteristicGroup = async () => {
+    if (currentGroup !== null && currentGroup?.students) {
+      if (!detectIfSupervisorsSelected()) {
+        return
+      }
+
+      await getCharacteristicGroupR(Number(currentGroup.id), Number(selectedPracticeId)).then(
+        (res) => saveBlobFile(res, 'Kharakteristika_' + currentGroup.name)
+      )
     }
   }
 
@@ -294,10 +340,34 @@ const GroupDetail = () => {
     }
   }
 
-  const getDirectionDocument = async (practiceId) => {
+  const getDirectionGroupDocument = async (practiceId) => {
     if (currentGroup !== null) {
-      getDirectionDocumentR(Number(currentGroup.id), Number(practiceId)).then((res) =>
-        saveBlobFile(res, 'Направления группы ' + currentGroup.name)
+      if (!detectIfSupervisorsSelected()) {
+        return
+      }
+      getDirectionGroupDocumentR(Number(currentGroup.id), Number(practiceId)).then((res) =>
+        saveBlobFile(res, 'Directions_' + currentGroup.name)
+      )
+    }
+  }
+
+  const getDirectionDocument = async (student) => {
+    if (currentGroup !== null) {
+      getDirectionDocumentR(
+        Number(currentGroup.id),
+        Number(selectedPracticeId),
+        Number(student.id)
+      ).then((res) => saveBlobFile(res, 'Direction_' + student.full_name))
+    }
+  }
+
+  const getOrderingDocumentFunc = async (practiceId) => {
+    if (currentGroup !== null) {
+      if (!detectIfSupervisorsSelected()) {
+        return
+      }
+      getOrderingDocumentR(Number(currentGroup.id), Number(practiceId)).then((res) =>
+        saveBlobFile(res, 'Prikaz_' + currentGroup.name)
       )
     }
   }
@@ -397,20 +467,34 @@ const GroupDetail = () => {
                       </td>
                       <td className={styles.nameCol}>{String(el.end_date).replaceAll('-', '.')}</td>
                       <td className={styles.actionsCol}>
-                        <span className={clsx(styles.filesBtn, styles.filesBtnPractices)}>
-                          Скачать
-                          <div className={styles.files__wrapper}>
-                            <button className={styles.editBtn} onClick={getAgreementDocument}>
-                              Договор
-                            </button>
-                            <button
-                              className={styles.editBtn}
-                              onClick={() => getDirectionDocument(el.id)}
-                            >
-                              Направления
-                            </button>
-                          </div>
-                        </span>
+                        {!!currentGroup.specialty?.specialty && (
+                          <span className={clsx(styles.filesBtn, styles.filesBtnPractices)}>
+                            Скачать
+                            <div className={styles.files__wrapper}>
+                              <button className={styles.editBtn} onClick={getAgreementDocument}>
+                                Договор
+                              </button>
+                              <button
+                                className={styles.editBtn}
+                                onClick={() => getOrderingDocumentFunc(el.id)}
+                              >
+                                Приказ
+                              </button>
+                              <button className={styles.editBtn} onClick={getCertificatSheetGroupF}>
+                                Аттестационные листы
+                              </button>
+                              <button
+                                className={styles.editBtn}
+                                onClick={() => getDirectionGroupDocument(el.id)}
+                              >
+                                Направления
+                              </button>
+                              <button className={styles.editBtn} onClick={getCharacteristicGroup}>
+                                Характеристики
+                              </button>
+                            </div>
+                          </span>
+                        )}
                         <button className={styles.editBtn} onClick={() => handleEditPractice(el)}>
                           Редактировать
                         </button>
@@ -462,11 +546,11 @@ const GroupDetail = () => {
             </thead>
             <tbody>
               {currentGroup.students?.map((student: any, index: number) => (
-                <tr key={student.id}>
+                <tr key={student.id} className={styles.student__tr}>
                   <td className={styles.indexCol}>{index + 1}</td>
                   <td className={styles.nameCol}>{student.full_name}</td>
                   <td className={styles.actionsCol}>
-                    {student.practice_base_id !== null && (
+                    {student.practice_base_id !== null && !!currentGroup.specialty?.specialty && (
                       <span className={styles.filesBtn}>
                         Скачать
                         <div className={styles.files__wrapper}>
@@ -475,6 +559,12 @@ const GroupDetail = () => {
                             onClick={() => getStudentCertificatSheet(student)}
                           >
                             Аттестационный лист
+                          </button>
+                          <button
+                            className={styles.editBtn}
+                            onClick={() => getDirectionDocument(student)}
+                          >
+                            Направление
                           </button>
                           <button
                             className={styles.editBtn}

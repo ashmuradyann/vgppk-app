@@ -1,7 +1,7 @@
 import axios from 'axios'
 
-const DEV_URL = 'http://127.0.0.1:8000/api'
-// const DEV_URL = 'https://muradyan.studio-av.ru/api'
+// const DEV_URL = 'http://127.0.0.1:8000/api'
+const DEV_URL = 'https://muradyan.studio-av.ru/api'
 
 export const $api = axios.create({
   baseURL: DEV_URL,
@@ -76,12 +76,14 @@ export const deleteStudent = (id: number) =>
 export const updateStudentR = (
   id: number,
   full_name: string,
+  inner_supervisor: string,
   practice_base_id: number,
   practice_supervisor: string
 ) =>
   $api
     .put(`/students/update/${id}`, {
       full_name,
+      inner_supervisor,
       practice_base_id,
       practice_supervisor
     })
@@ -145,16 +147,11 @@ export const getPracticeBases = () =>
     .then((res) => res.data)
     .catch((err) => console.log(err))
 
-export const createPracticeBase = (
-  organisation: string,
-  supervisors: string,
-  address: string
-): Promise<any> =>
+export const createPracticeBase = (organisation: string, supervisors: string): Promise<any> =>
   $api
     .post(`/practice_bases`, {
       organisation,
-      supervisors,
-      address
+      supervisors
     })
     .then((res) => res.data)
     .catch((err) => {
@@ -165,15 +162,13 @@ export const createPracticeBase = (
 export const updatePracticeBase = (
   id: number,
   organisation: string,
-  supervisors: string,
-  address: string
+  supervisors: string
 ): Promise<any> =>
   $api
     .put(`/practice_bases`, {
       id,
       organisation,
-      supervisors,
-      address
+      supervisors
     })
     .then((res) => res.data)
     .catch((err) => {
@@ -266,7 +261,28 @@ export const getStudentCharacteristicR = (
       throw err
     })
 
-export const getStudentCrtificatSheetR = (
+export const getCharacteristicGroupR = (group_id: number, practice_id: number): Promise<any> =>
+  $api
+    .post(
+      `/characteristic_group`,
+      {
+        group_id,
+        practice_id
+      },
+      {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      }
+    )
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const getStudentCertificatSheetR = (
   student_id: number,
   group_id: number,
   practice_id: number
@@ -276,6 +292,48 @@ export const getStudentCrtificatSheetR = (
       `/student_certificat_sheet`,
       {
         student_id,
+        group_id,
+        practice_id
+      },
+      {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      }
+    )
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const getCertificatSheetGroupR = (group_id: number, practice_id: number): Promise<any> =>
+  $api
+    .post(
+      `/certificat_sheet_group`,
+      {
+        group_id,
+        practice_id
+      },
+      {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      }
+    )
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const getOrderingDocumentR = (group_id: number, practice_id: number): Promise<any> =>
+  $api
+    .post(
+      `/ordering_document`,
+      {
         group_id,
         practice_id
       },
@@ -344,10 +402,39 @@ export const getAgreementDocumentR = (
       throw err
     })
 
-export const getDirectionDocumentR = (group_id: number, selectedPracticeId: number): Promise<any> =>
+export const getDirectionDocumentR = (
+  group_id: number,
+  practice_id: number,
+  student_id: number
+): Promise<any> =>
   $api
     .post(
       `/direction_document`,
+      {
+        group_id,
+        practice_id,
+        student_id
+      },
+      {
+        responseType: 'blob',
+        headers: {
+          Accept: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      }
+    )
+    .then((res) => res.data)
+    .catch((err) => {
+      console.error(err)
+      throw err
+    })
+
+export const getDirectionGroupDocumentR = (
+  group_id: number,
+  selectedPracticeId: number
+): Promise<any> =>
+  $api
+    .post(
+      `/direction_group_document`,
       {
         group_id,
         practice_id: selectedPracticeId

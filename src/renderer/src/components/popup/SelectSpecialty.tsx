@@ -64,7 +64,7 @@ const SelectSpecialty = () => {
               checked={selectedSpec?.id === el.id}
             />
             <div className={styles.radio__custom}></div>
-            <div className={styles.radio__content}>
+            <div className={clsx(styles.radio__content, styles.radio__content_specialty, "flex-column")}>
               <span className={styles.spec__code}>{el.code}</span>
               <p className={styles.spec__name}>{el.specialty}</p>
               <small className={styles.spec__qual}>{el.qualification}</small>

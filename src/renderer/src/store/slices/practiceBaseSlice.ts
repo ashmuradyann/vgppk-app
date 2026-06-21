@@ -4,7 +4,6 @@ interface PracticeBase {
   id: number
   organisation: string
   supervisors: string
-  address: string
 }
 
 export interface PracticeBaseState {

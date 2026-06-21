@@ -55,7 +55,6 @@ const PracticeBases = () => {
       prev.set('id', el.id)
       prev.set('organisation', el.organisation)
       prev.set('supervisors', el.supervisors)
-      prev.set('address', el.address)
       return prev
     })
     openPracticeBasesPopup('editing')
@@ -80,7 +79,6 @@ const PracticeBases = () => {
             <div key={el.id} className={styles.groupRow}>
               <p className={styles.groupName}>
                 <span style={{ color: '#718096', marginRight: '8px' }}>{el.organisation}</span>
-                {el.address}
               </p>
 
               <p className={styles.teacherName}>{getSupervisorsText(el.supervisors)}</p>

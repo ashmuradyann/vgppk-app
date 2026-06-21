@@ -28,7 +28,6 @@ const AddPracticeBase = () => {
         const formData = new FormData()
         formData.set('organisation', decodeURIComponent(searchParams.get('organisation') || ''))
         formData.set('supervisors', decodeURIComponent(searchParams.get('supervisors') || ''))
-        formData.set('address', decodeURIComponent(searchParams.get('address') || ''))
 
         for (let [key, value] of formData.entries()) {
           if (formRef.current[key]) {
@@ -44,10 +43,9 @@ const AddPracticeBase = () => {
 
     try {
       const formData = new FormData(e.currentTarget)
-      const { organisation, supervisors, address } = Object.fromEntries(formData.entries()) as {
+      const { organisation, supervisors } = Object.fromEntries(formData.entries()) as {
         organisation: string
         supervisors: string
-        address: string
       }
 
       if (popupStatus === 'editing') {
@@ -55,14 +53,13 @@ const AddPracticeBase = () => {
           Number(searchParams.get('id')),
           organisation,
           supervisors,
-          address
         ).then((res) => {
           showNotify(true, `База практики ${res.data.organisation} обновлена`)
           dispatch(editPracticeBase(res.data))
           dispatch(closePopup())
         })
       } else {
-        await createPracticeBase(organisation, supervisors, address).then((res) => {
+        await createPracticeBase(organisation, supervisors).then((res) => {
           showNotify(true, `База практики ${res.data.organisation} создана`)
           dispatch(addPracticeBase(res.data))
           dispatch(closePopup())
@@ -81,7 +78,6 @@ const AddPracticeBase = () => {
     <form ref={formRef} onSubmit={formSubmit} className="flex-column">
       <input name="organisation" type="text" placeholder="Наименование базы практики" required />
       <input name="supervisors" type="text" placeholder="ФИО-должность, ФИО-должность" required />
-      <input name="address" type="text" placeholder="Адрес базы практики" required />
       <button type="submit">{popupStatus === "editing" ? "Обновить" : "Создать"}</button>
     </form>
   )

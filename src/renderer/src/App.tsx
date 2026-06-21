@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 
 import MainLayout from './MainLayout'
 import Groups from './components/groups/Groups'
@@ -8,7 +8,7 @@ import Specialties from './components/specialties/Specialties'
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<MainLayout />}>
           <Route index element={<Navigate to="/groups" />} />
@@ -18,7 +18,7 @@ function App() {
           <Route path="specialties" element={<Specialties />} />
         </Route>
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
 

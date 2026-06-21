@@ -362,13 +362,30 @@
   background: #e2f4fe;
 }
 
+.table {
+  .student__tr {
+    &:last-child {
+      .files__wrapper {
+        top: -550%;
+      }
+    }
+    &:nth-last-child(2) {
+      .files__wrapper {
+        top: -450%;
+      }
+    }
+  }
+}
+
 .filesBtn {
   position: relative;
 
   &.filesBtnPractices {
     .files__wrapper {
-      top: -130%;
-      left: -100%;
+      top: -50%;
+      left: -160%;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
     }
   }
 
@@ -377,8 +394,8 @@
     border-radius: 12px;
     background-color: rgb(250, 250, 250);
     position: absolute;
-    top: -390%;
-    left: -150%;
+    top: -250%;
+    left: -200%;
     opacity: 0;
     pointer-events: none;
     display: flex;
