@@ -374,6 +374,19 @@
         top: -450%;
       }
     }
+
+    &.pdp {
+      &:last-child {
+        .files__wrapper {
+          top: -250%;
+        }
+      }
+      &:nth-last-child(2) {
+        .files__wrapper {
+          top: -250%;
+        }
+      }
+    }
   }
 }
 

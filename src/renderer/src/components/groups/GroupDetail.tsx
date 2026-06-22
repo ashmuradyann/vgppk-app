@@ -372,6 +372,8 @@ const GroupDetail = () => {
     }
   }
 
+  const selectedPractice = currentGroup?.practices?.find((el) => el.id === selectedPracticeId)
+
   if (loading) return <div className={styles.loader}>Загрузка...</div>
   if (!currentGroup) return <div className={styles.error}>Группа не найдена</div>
 
@@ -489,9 +491,11 @@ const GroupDetail = () => {
                               >
                                 Направления
                               </button>
-                              <button className={styles.editBtn} onClick={getCharacteristicGroup}>
-                                Характеристики
-                              </button>
+                              {el.type === 'pdp' && (
+                                <button className={styles.editBtn} onClick={getCharacteristicGroup}>
+                                  Характеристики
+                                </button>
+                              )}
                             </div>
                           </span>
                         )}
@@ -546,7 +550,13 @@ const GroupDetail = () => {
             </thead>
             <tbody>
               {currentGroup.students?.map((student: any, index: number) => (
-                <tr key={student.id} className={styles.student__tr}>
+                <tr
+                  key={student.id}
+                  className={clsx(
+                    styles.student__tr,
+                    selectedPractice?.type !== 'pdp' && styles.pdp
+                  )}
+                >
                   <td className={styles.indexCol}>{index + 1}</td>
                   <td className={styles.nameCol}>{student.full_name}</td>
                   <td className={styles.actionsCol}>
@@ -566,18 +576,22 @@ const GroupDetail = () => {
                           >
                             Направление
                           </button>
-                          <button
-                            className={styles.editBtn}
-                            onClick={() => getStudentCharacteristic(student)}
-                          >
-                            Характеристика
-                          </button>
-                          <button
-                            className={styles.editBtn}
-                            onClick={() => getReviewDocument(student)}
-                          >
-                            Отзыв
-                          </button>
+                          {selectedPractice?.type === 'pdp' && (
+                            <>
+                              <button
+                                className={styles.editBtn}
+                                onClick={() => getStudentCharacteristic(student)}
+                              >
+                                Характеристика
+                              </button>
+                              <button
+                                className={styles.editBtn}
+                                onClick={() => getReviewDocument(student)}
+                              >
+                                Отзыв
+                              </button>
+                            </>
+                          )}
                         </div>
                       </span>
                     )}
